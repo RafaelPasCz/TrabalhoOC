@@ -22,16 +22,18 @@ def mutacao_gene(gene, taxa):
     newgene = "" #aparentemente, strings sao imutáveis no python. Logo, precisamos criar uma nova string com o novo gene.
     
     for i in gene:
-        j = i
-        if random.random() < taxa:
-            newgene += "0" if i == "1" else "1"
+        if i == ".":
+            newgene += "."
         else:
-            newgene += j
+            if random.random() < taxa:
+                newgene += "0" if i == "1" else "1"
+            else:
+                newgene += i
         
     return newgene
 
         
-gene = "01100101"
+gene = "001.001"
 taxa = 0.05
 print(gene)
 gene = mutacao_gene(gene, taxa)
