@@ -1,6 +1,45 @@
+import random
 
+def cruzamento(pontos):
+    print('a')
+
+def calculafit(pontosbinx,pontosbiny,t):
+    pontosdecx = [None] * t
+    pontosdecy = [None] * t
+    pontosdecz = [None] * t #cria listas para guardar os valores em decimal 
+    for i in range (t):
+        pontosdecx[i] = binario_para_float(pontosbinx[i]) #converte de binario para float r guarda num vetor
+        pontosdecy[i] = binario_para_float(pontosbiny[i]) #..
+        pontosdecz[i] = funcao(pontosdecx[i],pontosdecy[i]) #calcula o fitness da geração
+    return pontosdecz #retorna a lista com todos os fitness associados a cada índice de par (x,y)
+    
+
+
+def roleta(ger): #ger = lista contendo os fitness da geração, cada índice corresponde a um par (x,y) da geração
+    t = len(ger)
+    p=[None]*t  #declara lista das porcentagens
+    soma = sum(ger) #soma todos os fitness da geração
+    for i in range (t):
+        p[i] = (ger[i] + 75.15625 / soma) * 100 #probabilidade = (fitness + modulo do valor minimo / soma dos fitness) * 100 
+
+    escolhas=random.choices(population=ger,weights=p,k=t)   #metodo random.choices retorna lista com t posições-
+                                                            #-todos os indices são ocupados com um sorteio de um membro de ger-
+                                                            #-todos baseados em o peso passado em p respectivamente, as probabilidades não-
+                                                            #-são cumulativas, então todos os sorteios são igualmente válidos, escolhi o primeiro da-
+                                                            #-lista para ser o gene sorteado
+    sorteado = escolhas[0]
+    for i in range(t):
+        if sorteado == ger[i]:
+            return ger[i] #achar o índice de ger que foi sorteado e retornar
+
+
+    
 def float_para_binario(numero):
-    casas = 3
+    if numero > 2.5:
+        return 2.5
+    if numero < -2.5:
+        return -2.5
+    casas = 5
     sinal_bit = '0' if numero >= 0 else '1' #quarda se o numero é positivo ou negativo
     numero = abs(numero)  # valor absoluto do número, mais fácil pra fazer a lógica do que tratar numeros positivos ou negativos
     
@@ -63,6 +102,10 @@ def binario_para_float(string_binaria):
     if e_negativo:
         resultado_float = -resultado_float #aplica sinal se a string binaria era negativa
     
+    if resultado_float > 2.5:
+        resultado_float = 2.5
+    if resultado_float < -2.5:
+        resultado_float = -2.5
     return resultado_float
 
 
@@ -72,11 +115,15 @@ def funcao(x,y):
     z = (pow(x,5)) - (10*(pow(x,3))) + (30*x) - (pow(y,2)) + (21*y)
     return z
 
-x = 1.126033
-y = 2.5
+x = -2.5
+y = -2.5
 i = 0
 m = 100000
 ponto = '.'
+populacao = ['001.10010 101.10010','110.11001 010.10110']
+pontosbinx = [None] * len(populacao)
+pontosbiny = [None] * len(populacao)
+#-------testes das funções de conversão----------
 bx = float_para_binario(x)
 by = float_para_binario(y)
 print('bx: ',bx)
@@ -85,12 +132,21 @@ a = binario_para_float(bx)
 b = binario_para_float(by)
 print('a: ',a)
 print('b: ',b)
-
-
-#z = funcao(x,y) 
-#print('resultado: ',z)
-
-
-
+#-------------------------------------------------
+#----------teste da roleta--------------
+geracaoteste = [22.5,42.7,98.1,40.8]
+escolha = roleta(geracaoteste)
+print(escolha)
+#-------------------------------------
+#---------teste de calculafit--------
+geracao = [None] * len(populacao)
+for i in range (len(populacao)):
+    pontosbinsep = populacao[i].split()
+    print('pontosbinsep: ',pontosbinsep)
+    pontosbinx[i] = pontosbinsep[0]
+    pontosbiny[i] = pontosbinsep[1]
+geracao=calculafit(pontosbinx,pontosbiny,len(populacao))
+print('geracao: ',geracao)
+#------------------------------------
 
 
