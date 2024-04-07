@@ -136,7 +136,7 @@ print("----- Algoritmo Genético -----")
 
 tamPopulacao = int(input("Insira o tamanho da população inicial (int): "))          #Pegamos o dado e convertemos em int
 tamGene      = int(input("Insira o tamanho dos genes (int) (recomendado - 16): "))  #(8 bits para X + 8 bits para Y)
-taxaMutacao  = float(input("Insira a taxa de mutação (entre 0,01 e 0,05): "))
+taxaMutacao  = float(input("Insira a taxa de mutação (entre 0.01 e 0.05): "))
 
 listaGenes = [] #definimos a lista aonde será armazenado cada indivíduo da geração (em binário)
 
