@@ -66,9 +66,9 @@ def mutacao_populacao(populacao, tamPopulacao, taxa):   #Muta toda a população
 
 def float_para_binario(numero):                         #Recebe valor float, retorna string em binário ponto fixo
     if numero > 2.5:
-        return 2.5
+        return "01010000"
     if numero < -2.5:
-        return -2.5
+        return "11010000"
     casas = 5
     sinal_bit = '0' if numero >= 0 else '1' #quarda se o numero é positivo ou negativo
     numero = abs(numero)  # valor absoluto do número, mais fácil pra fazer a lógica do que tratar numeros positivos ou negativos
@@ -91,7 +91,7 @@ def float_para_binario(numero):                         #Recebe valor float, ret
     if len(binario_inteiro) < 2:
             binario_inteiro = '0' + binario_inteiro #se a parte inteira tiver menos caracteres que 2, adicionar um 0 para manter 3 bits de cada lado
 
-    binario_representacao = binario_inteiro + '.' + ''.join(binario_decimal) #soma as strings para juntar o inteiro e decimal
+    binario_representacao = binario_inteiro + ''.join(binario_decimal) #soma as strings para juntar o inteiro e decimal
     
     binario_representatacao_sinal = sinal_bit + binario_representacao
     
@@ -99,24 +99,28 @@ def float_para_binario(numero):                         #Recebe valor float, ret
 
 
 
-def binario_para_float(string_binaria):                 #Recebe string binaria ponto fixo, retorna valor float
+def binario_para_float(partes):                 #Recebe string binaria ponto fixo, retorna valor float
    
-    bit_sinal = string_binaria[0]    # Verifica o bit de sinal e seta aflag de positivo ou negativo
-    e_negativo = True if bit_sinal == '1' else False
+    #bit_sinal = string_binaria[0]    # Verifica o bit de sinal e seta aflag de positivo ou negativo
+    #e_negativo = True if bit_sinal == '1' else False
+    e_negativo = bool(int(partes[0])) #Troquei por essa linha bem serelepe
         
-    partes = string_binaria[1:].split('.') # separa a parte inteira e a parte fracionária da string binária e guarda em vetor partes
-    if len(partes) == 1:
-        parte_inteira = partes[0] #se so houver parte inteira, parte decimal será 0
-        parte_decimal = '0' 
-    else:
-        parte_inteira = partes[0]
-        parte_decimal = partes[1]
-    
-    if parte_inteira == "100":
-        if parte_decimal == "00000": #tratar 0 negativo
-            parte_inteira = "000"
+    #partes = string_binaria[1:].split('.') # separa a parte inteira e a parte fracionária da string binária e guarda em vetor partes
+    parte_inteira = partes[:3]
+    parte_decimal = partes[3:]
+
+    if parte_inteira == "100" and parte_decimal == "00000": 
+        parte_inteira = "000"   #tratar 0 negativo
+        e_negativo = False
+        
+
+    parte_inteira = parte_inteira[1:] #Essa linha serve para arrumar um bug que tava acontecendo antes
+                                        #Basicamente, ele também convertia o primeiro bit (bit de sinal) para decimal
+                                        #logo, todo número negativo acabava ficando menor que -4 (100)
+                                        #E todo número negativo acabava sendo arredondado para -2.5    
    
-    parte_inteira_float = int(parte_inteira, 2) #converte a parte inteira binaria pra inteiro decimal
+    parte_inteira_float = int(parte_inteira, 2) #converte a parte inteira binaria pra inteiro decimal 
+                                                #o 2 representa que o input está em binario
     
     parte_decimal_float = 0.0 #converte a parte fracionaria da string binária para fracionária decimal
                                 #aqui eu percebi que toda vez que eu escrevi decimal até agora eu quis dizer fracionaria, mas fiquei com preguiça de mudar
@@ -142,11 +146,23 @@ def binario_para_float(string_binaria):                 #Recebe string binaria p
 
 
 
-
+#float -> bin funciona
+#bin -> float
 
 
 #int main()
 print("----- Algoritmo Genético -----")
+print("Testando bin to float")
+while(True):
+    numeroB = input("Insira um bin . : ")
+    numeroF = binario_para_float(numeroB)
+    print("Seu equivalente float é: ", numeroF)
+    numeroB = float_para_binario(numeroF)
+    print("E bin de novo fica: ", numeroB)
+
+
+
+
 
 tamPopulacao = int(input("Insira o tamanho da população inicial (int): "))          #Pegamos o dado e convertemos em int
 tamGene      = int(input("Insira o tamanho dos genes (int) (recomendado - 16): "))  #(8 bits para X + 8 bits para Y)
