@@ -1,11 +1,14 @@
 import random
 
+
+
 def elitismo(geracao):
     melhorgene = geracao[0]
     for i in range(len(geracao)):
         if geracao[i] > melhorgene:
             melhorgene = geracao[i]
     return i
+
 
 
 def cruzamento(pontobinx,pontobiny): #(pontosaseremcruzados)
@@ -29,6 +32,8 @@ def cruzamento(pontobinx,pontobiny): #(pontosaseremcruzados)
     pontoscruzados[0] = parte1x + parte2y + parte3x # forma as duas strings e guarda na lista
     pontoscruzados[1] = parte1y + parte2x + parte3y #se quiser pode somar as duas strings da lista para criar uma de 16 caracteres e retornar isso
     return pontoscruzados
+
+
 
 def calculafit(pontosbinx,pontosbiny,t):
     pontosdecx = [None] * t
@@ -96,8 +101,6 @@ def float_para_binario(numero):
 
 
 
-
-
 def binario_para_float(string_binaria):
    
     bit_sinal = string_binaria[0]    # Verifica o bit de sinal e seta aflag de positivo ou negativo
@@ -140,10 +143,12 @@ def binario_para_float(string_binaria):
 
 
 
-
 def funcao(x,y):
     z = (pow(x,5)) - (10*(pow(x,3))) + (30*x) - (pow(y,2)) + (21*y)
     return z
+
+
+
 
 x = -2.5
 y = -2.5
