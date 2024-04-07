@@ -12,6 +12,47 @@
 
 import random
 
+#def calculafit(pontosbinx,pontosbiny,t):
+#    pontosdecx = [None] * t
+#    pontosdecy = [None] * t
+#    pontosdecz = [None] * t #cria listas para guardar os valores em decimal 
+#    for i in range (t):
+#        pontosdecx[i] = binario_para_float(pontosbinx[i]) #converte de binario para float r guarda num vetor
+#        pontosdecy[i] = binario_para_float(pontosbiny[i]) #..
+#        pontosdecz[i] = funcao(pontosdecx[i],pontosdecy[i]) #calcula o fitness da geração
+#    return pontosdecz #retorna a lista com todos os fitness associados a cada índice de par (x,y)
+
+
+
+def fitness(gene):                                      #Função placeholder
+    #essa função:
+    #   Recebe uma string binária de 16 bits (gene)
+    #   Separa o X do Y
+    #   Converte eles em float
+    #   Retornar o valor do fitness (funcao(X, Y))
+    
+    #Aqui, cortamos o gene pela metade:
+    geneX = gene[:round(len(gene)/2)]   #Primeira metade vai pra X
+    #print("X = ", geneX)
+    geneY = gene[round(len(gene)/2):]   #Segunda metade vai pra Y
+    #print("Y = ", geneY)
+    
+    #print("Float de X é =", binario_para_float(geneX))
+    #print("Float de Y é =", binario_para_float(geneY))
+    
+    return funcao(binario_para_float(geneX), binario_para_float(geneY)) #Convertemos X e Y para Float, e calculamos o Z
+
+
+
+def fitness_populaca(listaGenes):                       #Recebe a população, calcula todos os fitnesses
+    #Recebe a matriz da população 
+    #Pega os genes em [x][0]
+    #Preenche os fitness em [x][1]
+    
+    for i in range(len(listaGenes)): #iteramos pelas linhas da matriz
+        listaGenes[i][1] = fitness(listaGenes[i][0])
+        
+
 
 def print_lista(lista):                                 #Recebe uma lista e printa ela
     for i in lista: #printamos a lista
@@ -19,7 +60,9 @@ def print_lista(lista):                                 #Recebe uma lista e prin
 
 
 
-def inicializa_genes(tamPopulacao, tamGene, geracao1):  #Recebe a lista por endereço
+#Nota: Essa função inicializa a lista e já calcula o fitness automaticamente
+def inicializa_genes(tamPopulacao, tamGene, geracao1):  #Recebe a lista, inicializa ela com valores randômicos
+    
     for i in range(tamPopulacao):
         #Primeiro, vamos criar uma string vazia para armazenar nosso numero binario
         numero = ""        
@@ -38,7 +81,7 @@ def inicializa_genes(tamPopulacao, tamGene, geracao1):  #Recebe a lista por ende
                     if(numero[9] == "1" and i == 10): numero += "0"
                     else: numero += str(random.randint(0, 1))                   #geramos '0' ou '1'
                 
-        geracao1.append(numero) #colocamos nosso gene no final da lista
+        geracao1.append([numero, fitness(numero)]) #colocamos nosso gene no final da lista
 
 
 
@@ -58,9 +101,11 @@ def mutacao_gene(gene, taxa):                           #Mutação de apenas um 
 
 
 
-def mutacao_populacao(populacao, tamPopulacao, taxa):   #Muta toda a população
-    for i in range(tamPopulacao):
-        populacao[i] = mutacao_gene(populacao[i], taxa)
+#Nota: Essa função inicializa a lista e já calcula o fitness automaticamente
+def mutacao_populacao(populacao, taxa):                 #Muta toda a população da lista
+    for i in range(len(populacao)):
+        populacao[i][0] = mutacao_gene(populacao[i][0], taxa)   #Mutamos cada gene
+        populacao[i][1] = fitness(populacao[i][0])              #E já calculamos se novo fitness
 
 
 
@@ -99,7 +144,7 @@ def float_para_binario(numero):                         #Recebe valor float, ret
 
 
 
-def binario_para_float(partes):                 #Recebe string binaria ponto fixo, retorna valor float
+def binario_para_float(partes):                         #Recebe string binaria ponto fixo, retorna valor float
    
     #bit_sinal = string_binaria[0]    # Verifica o bit de sinal e seta aflag de positivo ou negativo
     #e_negativo = True if bit_sinal == '1' else False
@@ -142,24 +187,42 @@ def binario_para_float(partes):                 #Recebe string binaria ponto fix
 
 
 
+def funcao(x,y):                                        #Recebe X e Y, retorna Z
+    z = (pow(x,5)) - (10*(pow(x,3))) + (30*x) - (pow(y,2)) + (21*y)
+    return z
 
 
-
-
-#float -> bin funciona
-#bin -> float
 
 
 #int main()
 print("----- Algoritmo Genético -----")
-print("Testando bin to float")
-while(True):
-    numeroB = input("Insira um bin . : ")
-    numeroF = binario_para_float(numeroB)
-    print("Seu equivalente float é: ", numeroF)
-    numeroB = float_para_binario(numeroF)
-    print("E bin de novo fica: ", numeroB)
 
+#print("Testando float to bin")                     #FUNCIONAL
+#while(True):
+#    numeroF = float(input("Insira um float . : "))
+#    numeroB = float_para_binario(numeroF)
+#    print("Seu equivalente binário é: ", numeroB)
+#    numeroF = binario_para_foat(numeroB)
+#    print("E float de novo fica: ", numeroB)
+
+#print("Testando bin to float")                     #FUNCIONAL
+#while(True):
+#    numeroB = input("Insira um bin . : ")
+#    numeroF = binario_para_float(numeroB)
+#    print("Seu equivalente float é: ", numeroF)
+#    numeroB = float_para_binario(numeroF)
+#    print("E bin de novo fica: ", numeroB)
+
+#print("Testando f(x, y)")                          #FUNCIONAL
+#while(True):
+#    X = float(input("Insira X: "))
+#    Y = float(input("Insira Y: "))
+#    print("Z = ", funcao(X, Y))
+
+#print("Testando fitness")                          #FUNCIONAL
+#while(True):
+#    gene = input("Insira um gene 16 bit: ")
+#    print("Z = ", fitness(gene))
 
 
 
@@ -168,18 +231,19 @@ tamPopulacao = int(input("Insira o tamanho da população inicial (int): "))    
 tamGene      = int(input("Insira o tamanho dos genes (int) (recomendado - 16): "))  #(8 bits para X + 8 bits para Y)
 taxaMutacao  = float(input("Insira a taxa de mutação (entre 0.01 e 0.05): "))
 
-listaGenes = [] #definimos a lista aonde será armazenado cada indivíduo da geração (em binário)
+listaGenes = [] #Matriz. Col 0 - Gene | Col 1 - Fitness
 
 inicializa_genes(tamPopulacao, tamGene, listaGenes) #incializamos a função com os parâmetros acima
 
 print("Sua pop inicial em binario é:")
 print_lista(listaGenes)
 
-print("Sua pop inicial ")
-
 print("Agora vamos mutar ela")
 
-mutacao_populacao(listaGenes, tamPopulacao, taxaMutacao)
+mutacao_populacao(listaGenes, taxaMutacao)
+print_lista(listaGenes)
+
+#fitness_populaca(listaGenes)
 
 print("Sua pop mutada é:")
 print_lista(listaGenes)

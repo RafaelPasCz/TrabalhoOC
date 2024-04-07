@@ -155,9 +155,11 @@ y = -2.5
 i = 0
 m = 100000
 ponto = '.'
-populacao = ['001.10010 101.10010','110.11001 010.10110']
+populacao = ['001.10010 101.10010','110.11001 010.10110'] #dois genes aleatórios para testes
 pontosbinx = [None] * len(populacao)
 pontosbiny = [None] * len(populacao)
+
+#------------------------------------------------
 #-------testes das funções de conversão----------
 bx = float_para_binario(x)
 by = float_para_binario(y)
@@ -167,27 +169,32 @@ a = binario_para_float(bx)
 b = binario_para_float(by)
 print('a: ',a)
 print('b: ',b)
-#-------------------------------------------------
+
+#---------------------------------------
 #----------teste da roleta--------------
 geracaoteste = [22.5,42.7,98.1,40.8]
 escolha = roleta(geracaoteste)
 print(escolha)
+
 #-------------------------------------
-#---------teste de calculafit--------
-geracao = [None] * len(populacao)
+#---------teste de calculafit---------
+geracao = [None] * len(populacao) #Fazemos uma copia do vetor população (com os genes), só que sem nenhum dado dentro dele
 for i in range (len(populacao)):
-    pontosbinsep = populacao[i].split()
+    pontosbinsep = populacao[i].split() #Criamos uma matriz que contém os X e Y (colunas) de cada indivíduo (linha)
     print('pontosbinsep: ',pontosbinsep)
-    pontosbinx[i] = pontosbinsep[0]
-    pontosbiny[i] = pontosbinsep[1]
-geracao=calculafit(pontosbinx,pontosbiny,len(populacao))
+    pontosbinx[i] = pontosbinsep[0] #Armazenamos os X's nesse vetor
+    pontosbiny[i] = pontosbinsep[1] #Armazenamos os Y's nesse vetor
+geracao = calculafit(pontosbinx,pontosbiny,len(populacao))  #Inserimos os vetores com X e Y dentro da função, 
+                                                            #que retorna um vetor com os fitnesses
 print('geracao: ',geracao)
+
 #------------------------------------
-#------teste de cruzamento-------
+#------teste de cruzamento-----------
 pontoa = "101.00111"
 pontob = "010.10001"
 cruzados=cruzamento(pontoa,pontob)
 print('cruzados:',cruzados)
+
 #---------------------------------
-#-------teste de elitismo-------
+#-------teste de elitismo---------
 
