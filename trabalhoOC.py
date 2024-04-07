@@ -1,7 +1,34 @@
 import random
 
-def cruzamento(pontos):
-    print('a')
+def elitismo(geracao):
+    melhorgene = geracao[0]
+    for i in range(len(geracao)):
+        if geracao[i] > melhorgene:
+            melhorgene = geracao[i]
+    return i
+
+
+def cruzamento(pontobinx,pontobiny): #(pontosaseremcruzados)
+    #se a entrada for a string grande de 16 bits, separada por espaço
+    #pontosaseremcruzados = pontos.split() separa a string em duas no espaço e guarda as duas metades em uma lista
+    #pontocruzadox = pontosaseremcruzados[0]
+    #pontocruzadoy = pontosaseremcruzados[1]
+    pontoscruzados = [None] * 2 #lista para guardar as 2 strings de retorno
+    parte1x = pontobinx[:2] #separa os 2 primeiros caracteres 
+    parte2x = pontobinx[2:6] # os proximos 4
+    parte3x = pontobinx[6:] #e os ultimos a partir do indice 6
+    print('parte1x:',parte1x) #prints de teste, se quiser pode remover
+    print('parte2x:',parte2x)
+    print('parte3x:',parte3x)
+    parte1y = pontobiny[:2] #..
+    parte2y = pontobiny[2:6] #..
+    parte3y = pontobiny[6:] #..
+    print('parte1y:',parte1y)
+    print('parte2y:',parte2y)
+    print('parte3y:',parte3y)
+    pontoscruzados[0] = parte1x + parte2y + parte3x # forma as duas strings e guarda na lista
+    pontoscruzados[1] = parte1y + parte2x + parte3y #se quiser pode somar as duas strings da lista para criar uma de 16 caracteres e retornar isso
+    return pontoscruzados
 
 def calculafit(pontosbinx,pontosbiny,t):
     pontosdecx = [None] * t
@@ -85,6 +112,9 @@ def binario_para_float(string_binaria):
         parte_inteira = partes[0]
         parte_decimal = partes[1]
     
+    if parte_inteira == "100":
+        if parte_decimal == "00000": #tratar 0 negativo
+            parte_inteira = "000"
    
     parte_inteira_float = int(parte_inteira, 2) #converte a parte inteira binaria pra inteiro decimal
     
@@ -148,5 +178,11 @@ for i in range (len(populacao)):
 geracao=calculafit(pontosbinx,pontosbiny,len(populacao))
 print('geracao: ',geracao)
 #------------------------------------
-
+#------teste de cruzamento-------
+pontoa = "101.00111"
+pontob = "010.10001"
+cruzados=cruzamento(pontoa,pontob)
+print('cruzados:',cruzados)
+#---------------------------------
+#-------teste de elitismo-------
 
