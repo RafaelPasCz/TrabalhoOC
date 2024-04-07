@@ -11,6 +11,18 @@ def elitismo(geracao): #########################################################
 
 
 
+def calculafit(pontosbinx,pontosbiny,t): ########################################################################################
+    pontosdecx = [None] * t
+    pontosdecy = [None] * t
+    pontosdecz = [None] * t #cria listas para guardar os valores em decimal 
+    for i in range (t):
+        pontosdecx[i] = binario_para_float(pontosbinx[i]) #converte de binario para float r guarda num vetor
+        pontosdecy[i] = binario_para_float(pontosbiny[i]) #..
+        pontosdecz[i] = funcao(pontosdecx[i],pontosdecy[i]) #calcula o fitness da geração
+    return pontosdecz #retorna a lista com todos os fitness associados a cada índice de par (x,y)
+
+
+
 def cruzamento(pontobinx,pontobiny): #(pontosaseremcruzados)
     #se a entrada for a string grande de 16 bits, separada por espaço
     #pontosaseremcruzados = pontos.split() separa a string em duas no espaço e guarda as duas metades em uma lista
@@ -35,34 +47,33 @@ def cruzamento(pontobinx,pontobiny): #(pontosaseremcruzados)
 
 
 
-def calculafit(pontosbinx,pontosbiny,t): ########################################################################################
-    pontosdecx = [None] * t
-    pontosdecy = [None] * t
-    pontosdecz = [None] * t #cria listas para guardar os valores em decimal 
-    for i in range (t):
-        pontosdecx[i] = binario_para_float(pontosbinx[i]) #converte de binario para float r guarda num vetor
-        pontosdecy[i] = binario_para_float(pontosbiny[i]) #..
-        pontosdecz[i] = funcao(pontosdecx[i],pontosdecy[i]) #calcula o fitness da geração
-    return pontosdecz #retorna a lista com todos os fitness associados a cada índice de par (x,y)
-    
-
-
 def roleta(ger): #ger = lista contendo os fitness da geração, cada índice corresponde a um par (x,y) da geração
     t = len(ger)
-    p=[None]*t  #declara lista das porcentagens
+    p = [None] * t  #declara lista das porcentagens
     soma = sum(ger) #soma todos os fitness da geração
-    for i in range (t):
+    
+    for i in range (t): #iteramos por todos os genes
         p[i] = (ger[i] + 75.15625 / soma) * 100 #probabilidade = (fitness + modulo do valor minimo / soma dos fitness) * 100 
 
-    escolhas=random.choices(population=ger,weights=p,k=t)   #metodo random.choices retorna lista com t posições-
+    escolhas = []
+
+    escolhas = random.choices(population=ger,weights=p,k=t)   #metodo random.choices retorna lista com t posições-
                                                             #-todos os indices são ocupados com um sorteio de um membro de ger-
                                                             #-todos baseados em o peso passado em p respectivamente, as probabilidades não-
                                                             #-são cumulativas, então todos os sorteios são igualmente válidos, escolhi o primeiro da-
                                                             #-lista para ser o gene sorteado
+                                                            
+    print("random.choices aplicado. Vamos ver o que tem dentro da lista escolhas: ")
+    for i in escolhas:
+        print(escolhas)
+    
+    print(":o")
+    
     sorteado = escolhas[0]
     for i in range(t):
         if sorteado == ger[i]:
             return ger[i] #achar o índice de ger que foi sorteado e retornar
+        
 
 
     
@@ -172,9 +183,9 @@ print('b: ',b)
 
 #---------------------------------------
 #----------teste da roleta--------------
-geracaoteste = [22.5,42.7,98.1,40.8]
+geracaoteste = [22.5,42.7,98.1,40.8] #lista com exemplos de fitnesses de uma geração
 escolha = roleta(geracaoteste)
-print(escolha)
+print("escolha: ", escolha)
 
 #-------------------------------------
 #---------teste de calculafit---------

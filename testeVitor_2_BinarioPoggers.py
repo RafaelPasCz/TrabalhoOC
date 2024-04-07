@@ -13,15 +13,21 @@
 import random
 import math
 
-#def calculafit(pontosbinx,pontosbiny,t):
-#    pontosdecx = [None] * t
-#    pontosdecy = [None] * t
-#    pontosdecz = [None] * t #cria listas para guardar os valores em decimal 
-#    for i in range (t):
-#        pontosdecx[i] = binario_para_float(pontosbinx[i]) #converte de binario para float r guarda num vetor
-#        pontosdecy[i] = binario_para_float(pontosbiny[i]) #..
-#        pontosdecz[i] = funcao(pontosdecx[i],pontosdecy[i]) #calcula o fitness da geração
-#    return pontosdecz #retorna a lista com todos os fitness associados a cada índice de par (x,y)
+
+
+def roleta(listaGenes):                 #Soma 75.16 aos fitnesses da população, e calcula seus pesos (%)
+    somaFitness = 0
+    
+    for i in listaGenes:                #iteramos por todos os fitness de toda a população, e somamos tudo
+        i[1] += 75.16                   #ATENÇÂO: Se ocorrerem erros, troque 75.16 por 75.15625!
+        somaFitness += i[1]         #NOTA: "i" vai receber cada linha da matriz. Só nos interessa a segunda coluna de cada linha.
+                                        
+    #print("somaFitness é: ", somaFitness)
+    
+    for i in listaGenes:                #iteramos por todos os genes
+        i[2] = (i[1] / somaFitness)     #probabilidade = (fitness + modulo do valor minimo / soma dos fitness) 
+    
+
 
 
 def elitismo(listaGenes, listaElites, numElites):           #Recebe a população, e separa os X melhores indivíduos
@@ -94,7 +100,7 @@ def inicializa_genes(tamPopulacao, tamGene, geracao1):  #Recebe a lista, inicial
                     if(numero[9] == "1" and i == 10): numero += "0"
                     else: numero += str(random.randint(0, 1))                   #geramos '0' ou '1'
                 
-        geracao1.append([numero, fitness(numero)]) #colocamos nosso gene no final da lista
+        geracao1.append([numero, fitness(numero), 0]) #colocamos nosso gene no final da lista
 
 
 
@@ -116,9 +122,11 @@ def mutacao_gene(gene, taxa):                           #Mutação de apenas um 
 
 #Nota: Essa função inicializa a lista e já calcula o fitness automaticamente
 def mutacao_populacao(populacao, taxa):                 #Muta toda a população da lista
+    
     for i in range(len(populacao)):
         populacao[i][0] = mutacao_gene(populacao[i][0], taxa)   #Mutamos cada gene
-        populacao[i][1] = fitness(populacao[i][0])              #E já calculamos se novo fitness
+        populacao[i][1] = fitness(populacao[i][0])              #Calculamos o novo fitness
+        populacao[i][2] = 0                                     #E resetamos sua chance de ser cruzado
 
 
 
@@ -259,7 +267,7 @@ taxaElitismo = taxaElitismo / 100                           #Transformamos a por
 taxaElitismo = int(math.ceil(taxaElitismo * tamPopulacao))  #Obtemos o valor absoluto de elites por geração
 
 
-listaGenes  = []    #Matriz. Col 0 - Gene | Col 1 - Fitness
+listaGenes  = []    #Matriz. Col 0 - Gene | Col 1 - Fitness | Col 2 - % roleta
 listaElites = []    #Matriz que armazena temporariamente genes removidos da listaGenes na função elitismo()
 
 
@@ -287,11 +295,18 @@ for i in range(geracoes + 1):
     print_lista(listaElites)
     #-----------------
     
+    
     #Seleção aqui
+    print("-------ROLETA--------")
+    roleta(listaGenes) #aqui vamos iterar pela lista e conceder a cada elemento uma porcentagem de escolha
+    print_lista(listaGenes)
+    print("---------------------")
     #-----------------
+    
     
     #cruzamento aqui
     #-----------------
+    
     
     #Mutação aqui
     print("Agora vamos mutar  a lista")
