@@ -11,6 +11,7 @@
 #2 - 
 
 import random
+import math
 
 #def calculafit(pontosbinx,pontosbiny,t):
 #    pontosdecx = [None] * t
@@ -23,8 +24,20 @@ import random
 #    return pontosdecz #retorna a lista com todos os fitness associados a cada índice de par (x,y)
 
 
+def elitismo(listaGenes, listaElites, numElites):           #Recebe a população, e separa os X melhores indivíduos
+    bestGene = 0
+    for i in range(numElites):              #iteramos numElites vezes
+        for j in range(len(listaGenes)):    #iteramos pela população
+            #print("listaGenes[i][1] eh : ", listaGenes[i][1], " listaGenes[bestGene][1] eh: ", listaGenes[bestGene][1])
+            if listaGenes[j][1] > listaGenes[bestGene][1]:  #encontramos o melhor gene
+                #print("Trocamos! ", i)
+                bestGene = j                #e armazenamos ele em bestGene
 
-def fitness(gene):                                      #Função placeholder
+        listaElites.append(listaGenes.pop(bestGene)) #Removemos o melhor gene da população, colocamos ele na listaElites
+
+
+
+def fitness(gene):                                      #Recebe um gene, separa o X do Y, retorna o fitness
     #essa função:
     #   Recebe uma string binária de 16 bits (gene)
     #   Separa o X do Y
@@ -44,7 +57,7 @@ def fitness(gene):                                      #Função placeholder
 
 
 
-def fitness_populaca(listaGenes):                       #Recebe a população, calcula todos os fitnesses
+def fitness_populacao(listaGenes):                      #Recebe a população, calcula todos os fitnesses
     #Recebe a matriz da população 
     #Pega os genes em [x][0]
     #Preenche os fitness em [x][1]
@@ -226,24 +239,75 @@ print("----- Algoritmo Genético -----")
 
 
 
+debug = input("Usar valores genéricos? (Menos tempo gasto debugando) (1 - Sim | 2 - Não): ")
 
-tamPopulacao = int(input("Insira o tamanho da população inicial (int): "))          #Pegamos o dado e convertemos em int
-tamGene      = int(input("Insira o tamanho dos genes (int) (recomendado - 16): "))  #(8 bits para X + 8 bits para Y)
-taxaMutacao  = float(input("Insira a taxa de mutação (entre 0.01 e 0.05): "))
+if(debug == "2" or debug == "Não"):
+    tamPopulacao = int(input("Insira o tamanho da população inicial (int): "))          #Pegamos o dado e convertemos em int
+    tamGene      = int(input("Insira o tamanho dos genes (int) (recomendado - 16): "))  #(8 bits para X + 8 bits para Y)
+    geracoes     = int(input("Insira o número máximo de gerações (int): "))
+    taxaMutacao  = float(input("Insira a taxa de mutação (entre 0.01 e 0.05): "))       #Interpretado como relação (porcentagem/100)
+    taxaElitismo = float(input("Insira a porcentagem de elitismo (recomendado - 0.5): "))      #Interpretado como porcentagem (%)
+else:
+    tamPopulacao = 10
+    tamGene      = 16
+    geracoes     = 5
+    taxaMutacao  = 0.05
+    taxaElitismo = 0.5
 
-listaGenes = [] #Matriz. Col 0 - Gene | Col 1 - Fitness
+
+taxaElitismo = taxaElitismo / 100                           #Transformamos a porcentagem no seu equivalente numérico
+taxaElitismo = int(math.ceil(taxaElitismo * tamPopulacao))  #Obtemos o valor absoluto de elites por geração
+
+
+listaGenes  = []    #Matriz. Col 0 - Gene | Col 1 - Fitness
+listaElites = []    #Matriz que armazena temporariamente genes removidos da listaGenes na função elitismo()
+
 
 inicializa_genes(tamPopulacao, tamGene, listaGenes) #incializamos a função com os parâmetros acima
-
 print("Sua pop inicial em binario é:")
 print_lista(listaGenes)
 
-print("Agora vamos mutar ela")
 
-mutacao_populacao(listaGenes, taxaMutacao)
-print_lista(listaGenes)
+for i in range(geracoes + 1):
+    #fitness_populacao(listaGenes)  #Acho que essa função nem vai ser necessária,
+                                    #já que o fitness sempre é recalculado logo quando um gene é alterado
+    print("--------------------------------------------")
+    print(" Nova iteração! Aqui está a lista de genes: ")
+    print_lista(listaGenes)
+    
+    #Critério de parada aqui 
+    if(i == (geracoes) or False): #Se alcançar o número máximo de iterações, ou outro criterio de parada lá
+        i = geracoes + 8
+        continue    #Termina o loop
+    #-----------------
 
-#fitness_populaca(listaGenes)
+    #Elitismo aqui
+    elitismo(listaGenes, listaElites, taxaElitismo)         #Obtemos os elites, inserimos eles na listaElites
+    print("Temos ", taxaElitismo, " elites. Eles são: ")
+    print_lista(listaElites)
+    #-----------------
+    
+    #Seleção aqui
+    #-----------------
+    
+    #cruzamento aqui
+    #-----------------
+    
+    #Mutação aqui
+    print("Agora vamos mutar  a lista")
+    mutacao_populacao(listaGenes, taxaMutacao)
+    print_lista(listaGenes)
+    #-----------------
+    
+    #Aqui colocamos os elites de volta na listaGenes
+    for i in range(len(listaElites)):           #iteramos pela listaElites
+        listaGenes.append(listaElites.pop(i))   #Removemos os elites, e colocamos eles de volta na população
+    #-----------------
 
-print("Sua pop mutada é:")
-print_lista(listaGenes)
+
+
+
+#fitness_populacao(listaGenes)
+
+#print("Sua pop mutada é:")
+#print_lista(listaGenes)

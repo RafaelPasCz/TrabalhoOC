@@ -2,7 +2,7 @@ import random
 
 
 
-def elitismo(geracao):
+def elitismo(geracao): ############################################################################################################
     melhorgene = geracao[0]
     for i in range(len(geracao)):
         if geracao[i] > melhorgene:
@@ -35,7 +35,7 @@ def cruzamento(pontobinx,pontobiny): #(pontosaseremcruzados)
 
 
 
-def calculafit(pontosbinx,pontosbiny,t):
+def calculafit(pontosbinx,pontosbiny,t): ########################################################################################
     pontosdecx = [None] * t
     pontosdecy = [None] * t
     pontosdecz = [None] * t #cria listas para guardar os valores em decimal 
@@ -66,7 +66,7 @@ def roleta(ger): #ger = lista contendo os fitness da geração, cada índice cor
 
 
     
-def float_para_binario(numero):
+def float_para_binario(numero):##################################################################################################
     if numero > 2.5:
         return 2.5
     if numero < -2.5:
@@ -101,7 +101,7 @@ def float_para_binario(numero):
 
 
 
-def binario_para_float(string_binaria):
+def binario_para_float(string_binaria):###################################################################################
    
     bit_sinal = string_binaria[0]    # Verifica o bit de sinal e seta aflag de positivo ou negativo
     e_negativo = True if bit_sinal == '1' else False
@@ -143,7 +143,7 @@ def binario_para_float(string_binaria):
 
 
 
-def funcao(x,y):
+def funcao(x,y):###############################################################################################################
     z = (pow(x,5)) - (10*(pow(x,3))) + (30*x) - (pow(y,2)) + (21*y)
     return z
 
