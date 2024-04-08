@@ -10,7 +10,6 @@ import random
 import math
 
 
-
 def random_naonulo():
     while True:
         num = random.random()  # num é aleatório, onde: {0 < num < 1}
@@ -53,28 +52,64 @@ def cruzamento(listaGenes):                                 #Recebe a populaçã
         somaPesos = sum([gene[2] for gene in listaGenes]) #soma dos pesos dos genes
 
         #Aqui escolhemos dois genes com base em seus pesos, usando random.choices
-        selecionados = random.choices(listaGenes, weights=[gene[2]/somaPesos for gene in listaGenes], k = 2)
+        while(True):
+            selecionados = random.choices(listaGenes, weights=[gene[2]/somaPesos for gene in listaGenes], k = 2)
+            if(selecionados[0][0] != selecionados[1][0]):
+                break                   #Muito ineficiente, mas garante que os dois elementos selecionados sejam diferentes
         
         print("Selecionamos 0- ", selecionados[0][0], " e 1- ", selecionados[1][0])
         
-        #agora, vamos iterar pela população, para "zerar" o peso desses genes escolhidos
-        for individuo in listaGenes:
-            if(individuo[0] == selecionados[0][0] or individuo[0] == selecionados[1][0]) :
-                print("Individuo = ", individuo)
-                individuo[2] = 0
-                print("Individuo dps = ", individuo)
+        
+        for i in range(len(listaGenes)):
+            if(listaGenes[i][0] == selecionados[0][0]) :
+                print("Individuo = ", listaGenes[i])
+                listaGenes[i][2] = 0
+                index1 = i
+                print("Individuo dps = ", listaGenes[i])
+            if(listaGenes[i][0] == selecionados[1][0]) :
+                print("Individuo = ", listaGenes[i])
+                listaGenes[i][2] = 0
+                index2 = i
+                print("Individuo dps = ", listaGenes[i])
                 
-        #Feito isso, vamos cruzá-los:
+        #Feito isso, vamos cruzar listaGenes[index1] com listaGenes[index2]: (Cruzamento de 2 pontos aleatórios)
+        #Primeiro, vamos gerar esses 2 pontos aleatórios:
+        corte1 = random.randrange(1, 15)
+        corte2 = corte1
+        while(corte1 == corte2):                
+            corte2 = random.randrange(1, 15)
         
+        print("Corte1 = ", corte1, "  corte2 = ", corte2)
+        
+        if(corte1 > corte2):    #Garantimos que o primeiro corte aconteça antes do segundo
+            aux = corte1
+            corte1 = corte2
+            corte2 = aux
             
+        print("Corte1 = ", corte1, "  corte2 = ", corte2)
+            
+        parte1x = listaGenes[index1][0][0:corte1]       #separa os primeiros caracteres 
+        parte2x = listaGenes[index1][0][corte1:corte2]  # os proximos 
+        parte3x = listaGenes[index1][0][corte2:]        #e os ultimos a partir do indice corte2
+        print('parte1x:',parte1x)
+        print('parte2x:',parte2x)       #prints de teste, se quiser pode remover
+        print('parte3x:',parte3x)
         
-    
-    # Agora você tem os dois genes selecionados em 'selecionados[0]' e 'selecionados[1]'
-    # Você pode prosseguir com o cruzamento desses genes
-    #gene1 = selecionados[0][0]
-    #gene2 = selecionados[1][0]
-
-    # Realize o cruzamento entre os genes 'gene1' e 'gene2' como necessário
+        parte1y = listaGenes[index2][0][0:corte1]       #.. 
+        parte2y = listaGenes[index2][0][corte1:corte2]  #..
+        parte3y = listaGenes[index2][0][corte2:]        #..
+        print('parte1y:',parte1y)
+        print('parte2y:',parte2y)
+        print('parte3y:',parte3y)
+        
+        print("Pre corte. index1 = ", listaGenes[index1][0], " index2 = ", listaGenes[index2][0])
+        
+        listaGenes[index1][0] = parte1x + parte2y + parte3x # forma as duas strings e guarda na lista
+        listaGenes[index2][0] = parte1y + parte2x + parte3y
+        
+        print("Pos corte. index1 = ", listaGenes[index1][0], " index2 = ", listaGenes[index2][0])
+        
+        #É isso?
 
 
 
@@ -392,6 +427,7 @@ for i in range(geracoes + 1):
     print("--------------------------")
     #-----------------
     
+    print_lista(listaGenes)
     
     #Mutação aqui
     print("--------MUTAÇÃO--------")
