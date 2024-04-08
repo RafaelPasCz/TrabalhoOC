@@ -47,7 +47,8 @@ def cruzamento(pontobinx,pontobiny): #(pontosaseremcruzados)
 
 
 
-def roleta(ger): #ger = lista contendo os fitness da geração, cada índice corresponde a um par (x,y) da geração
+def roleta(ger): ###################################################################################################################
+    #ger = lista contendo os fitness da geração, cada índice corresponde a um par (x,y) da geração
     t = len(ger)
     p = [None] * t  #declara lista das porcentagens
     soma = sum(ger) #soma todos os fitness da geração

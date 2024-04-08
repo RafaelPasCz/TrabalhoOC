@@ -5,21 +5,84 @@
 
 #To fazendo uns testes nesse arquivo, testando a compatibilidade entre funções
 
-#1 - Inicialização e mutação
-        #UPDATE: Compatíveis
-        
-#2 - 
 
 import random
 import math
 
 
 
-def roleta(listaGenes):                 #Soma 75.16 aos fitnesses da população, e calcula seus pesos (%)
+def random_naonulo():
+    while True:
+        num = random.random()  # num é aleatório, onde: {0 < num < 1}
+        if num != 0:
+            return num
+
+
+
+def cruzamento_old(pontobinx,pontobiny): #(pontosaseremcruzados)
+    #se a entrada for a string grande de 16 bits, separada por espaço
+    #pontosaseremcruzados = pontos.split() separa a string em duas no espaço e guarda as duas metades em uma lista
+    #pontocruzadox = pontosaseremcruzados[0]
+    #pontocruzadoy = pontosaseremcruzados[1]
+    pontoscruzados = [None] * 2 #lista para guardar as 2 strings de retorno
+    parte1x = pontobinx[:2] #separa os 2 primeiros caracteres 
+    parte2x = pontobinx[2:6] # os proximos 4
+    parte3x = pontobinx[6:] #e os ultimos a partir do indice 6
+    print('parte1x:',parte1x) #prints de teste, se quiser pode remover
+    print('parte2x:',parte2x)
+    print('parte3x:',parte3x)
+    parte1y = pontobiny[:2] #..
+    parte2y = pontobiny[2:6] #..
+    parte3y = pontobiny[6:] #..
+    print('parte1y:',parte1y)
+    print('parte2y:',parte2y)
+    print('parte3y:',parte3y)
+    pontoscruzados[0] = parte1x + parte2y + parte3x # forma as duas strings e guarda na lista
+    pontoscruzados[1] = parte1y + parte2x + parte3y #se quiser pode somar as duas strings da lista para criar uma de 16 caracteres e retornar isso
+    return pontoscruzados
+
+
+
+def cruzamento(listaGenes):                                 #Recebe a população com seus pesos, e cruza eles de 2 em 2.
+    
+    nCruzamentos = int(len(listaGenes) // 2) #Quantos pares de cruzamento serão selecionados
+                                        #// divide e arredonda para baixo
+                                        
+                                        
+    for i in range(nCruzamentos):
+        somaPesos = sum([gene[2] for gene in listaGenes]) #soma dos pesos dos genes
+
+        #Aqui escolhemos dois genes com base em seus pesos, usando random.choices
+        selecionados = random.choices(listaGenes, weights=[gene[2]/somaPesos for gene in listaGenes], k = 2)
+        
+        print("Selecionamos 0- ", selecionados[0][0], " e 1- ", selecionados[1][0])
+        
+        #agora, vamos iterar pela população, para "zerar" o peso desses genes escolhidos
+        for individuo in listaGenes:
+            if(individuo[0] == selecionados[0][0] or individuo[0] == selecionados[1][0]) :
+                print("Individuo = ", individuo)
+                individuo[2] = 0
+                print("Individuo dps = ", individuo)
+                
+        #Feito isso, vamos cruzá-los:
+        
+            
+        
+    
+    # Agora você tem os dois genes selecionados em 'selecionados[0]' e 'selecionados[1]'
+    # Você pode prosseguir com o cruzamento desses genes
+    #gene1 = selecionados[0][0]
+    #gene2 = selecionados[1][0]
+
+    # Realize o cruzamento entre os genes 'gene1' e 'gene2' como necessário
+
+
+
+def roleta(listaGenes):                                     #Soma 80.06 aos fitnesses da população, e calcula seus pesos (%)
     somaFitness = 0
     
     for i in listaGenes:                #iteramos por todos os fitness de toda a população, e somamos tudo
-        i[1] += 75.16                   #ATENÇÂO: Se ocorrerem erros, troque 75.16 por 75.15625!
+        i[1] += 80.06377201532881      #Somamos ao minimo possivel
         somaFitness += i[1]         #NOTA: "i" vai receber cada linha da matriz. Só nos interessa a segunda coluna de cada linha.
                                         
     #print("somaFitness é: ", somaFitness)
@@ -27,7 +90,6 @@ def roleta(listaGenes):                 #Soma 75.16 aos fitnesses da população
     for i in listaGenes:                #iteramos por todos os genes
         i[2] = (i[1] / somaFitness)     #probabilidade = (fitness + modulo do valor minimo / soma dos fitness) 
     
-
 
 
 def elitismo(listaGenes, listaElites, numElites):           #Recebe a população, e separa os X melhores indivíduos
@@ -99,8 +161,11 @@ def inicializa_genes(tamPopulacao, tamGene, geracao1):  #Recebe a lista, inicial
                 if(len(numero) == 10): #gene Y
                     if(numero[9] == "1" and i == 10): numero += "0"
                     else: numero += str(random.randint(0, 1))                   #geramos '0' ou '1'
-                
-        geracao1.append([numero, fitness(numero), 0]) #colocamos nosso gene no final da lista
+        
+        geracao1.append([numero, 0, 0]) #colocamos nosso gene no final da lista
+    
+    fitness_populacao(listaGenes) #Calcula os fitnesses e corrige os limites da função
+                    #Seria mais eficiente calcular o fitness enquanto a lista é populada, mas daí teria que arrumar um jeito de corrigir os limites da função
 
 
 
@@ -253,15 +318,19 @@ if(debug == "2" or debug == "Não"):
     tamPopulacao = int(input("Insira o tamanho da população inicial (int): "))          #Pegamos o dado e convertemos em int
     tamGene      = int(input("Insira o tamanho dos genes (int) (recomendado - 16): "))  #(8 bits para X + 8 bits para Y)
     geracoes     = int(input("Insira o número máximo de gerações (int): "))
+    eliteReps    = int(input("Insira o número máximo de repetições que um elite pode sofrer (convergência prematura - critério de parada) (int)"))    #Variável usada para identificar uma convergência prematura
     taxaMutacao  = float(input("Insira a taxa de mutação (entre 0.01 e 0.05): "))       #Interpretado como relação (porcentagem/100)
     taxaElitismo = float(input("Insira a porcentagem de elitismo (recomendado - 0.5): "))      #Interpretado como porcentagem (%)
 else:
     tamPopulacao = 10
     tamGene      = 16
-    geracoes     = 5
+    geracoes     = 10
     taxaMutacao  = 0.05
     taxaElitismo = 0.5
+    eliteReps    = 12
 
+eliteCounter  = 0     
+eliteAnterior = ""  #Variáveis usadas para identificar uma convergência prematura
 
 taxaElitismo = taxaElitismo / 100                           #Transformamos a porcentagem no seu equivalente numérico
 taxaElitismo = int(math.ceil(taxaElitismo * tamPopulacao))  #Obtemos o valor absoluto de elites por geração
@@ -269,6 +338,7 @@ taxaElitismo = int(math.ceil(taxaElitismo * tamPopulacao))  #Obtemos o valor abs
 
 listaGenes  = []    #Matriz. Col 0 - Gene | Col 1 - Fitness | Col 2 - % roleta
 listaElites = []    #Matriz que armazena temporariamente genes removidos da listaGenes na função elitismo()
+
 
 
 inicializa_genes(tamPopulacao, tamGene, listaGenes) #incializamos a função com os parâmetros acima
@@ -282,39 +352,63 @@ for i in range(geracoes + 1):
     print("--------------------------------------------")
     print(" Nova iteração! Aqui está a lista de genes: ")
     print_lista(listaGenes)
+    print("--------------------------------------------")
     
     #Critério de parada aqui 
-    if(i == (geracoes) or False): #Se alcançar o número máximo de iterações, ou outro criterio de parada lá
+    #checagem de convergência prematura
+    
+    
+    if(i == (geracoes) or eliteCounter >= eliteReps): #Se alcançar o número máximo de iterações, ou outro criterio de parada lá
         i = geracoes + 8
-        continue    #Termina o loop
+        print("LOOP TERMINADO!!! O motivo é...")
+        if(eliteCounter >= eliteReps):
+            print("Convergência prematura!")
+        else:
+            print("Limite de gerações excedido!")
+        break    #Termina o loop
     #-----------------
 
+
     #Elitismo aqui
+    print("--------ELITISMO--------")
     elitismo(listaGenes, listaElites, taxaElitismo)         #Obtemos os elites, inserimos eles na listaElites
     print("Temos ", taxaElitismo, " elites. Eles são: ")
     print_lista(listaElites)
+    print("------------------------")
     #-----------------
     
     
     #Seleção aqui
-    print("-------ROLETA--------")
+    print("--------ROLETA--------")
     roleta(listaGenes) #aqui vamos iterar pela lista e conceder a cada elemento uma porcentagem de escolha
     print_lista(listaGenes)
-    print("---------------------")
+    print("----------------------")
     #-----------------
     
     
     #cruzamento aqui
+    print("--------CRUZAMENTO--------")
+    cruzamento(listaGenes)
+    print("--------------------------")
     #-----------------
     
     
     #Mutação aqui
+    print("--------MUTAÇÃO--------")
     print("Agora vamos mutar  a lista")
     mutacao_populacao(listaGenes, taxaMutacao)
     print_lista(listaGenes)
+    print("-----------------------")
     #-----------------
     
     #Aqui colocamos os elites de volta na listaGenes
+    print("Elite se repetiu ", eliteCounter, " vezes")
+    if(eliteAnterior == listaElites[0]):
+        eliteCounter += 1
+    else:
+        eliteCounter = 0
+        eliteAnterior = listaElites[0]
+        
     for i in range(len(listaElites)):           #iteramos pela listaElites
         listaGenes.append(listaElites.pop(i))   #Removemos os elites, e colocamos eles de volta na população
     #-----------------
