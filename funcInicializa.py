@@ -16,7 +16,7 @@ def inicializa_genes(tamPopulacao, tamGene, geracao1):  #Recebe a lista, inicial
         for i in range(tamGene): 
             if(i != 2 and i != 10): numero += str(random.randint(0, 1))     #geramos '0' ou '1'
             else:
-                #Essa coisa abaixo serve para evitar que a parte inteira do gene seja igual a 3 (111 ou 011)  
+                #Essa coisa abaixo serve para evitar que a parte inteira do gene seja igual a +/- 3 (111 ou 011)  
                 if(len(numero) == 2):  #gene X
                     if (numero[1] == "1" and i == 2): numero += "0"
                     else: numero += str(random.randint(0, 1))                   #geramos '0' ou '1'

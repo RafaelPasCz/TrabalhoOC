@@ -1,0 +1,9 @@
+Coisas que ainda precisamos fazer:
+
+*   Mostrar na tela o n° de gerações que se passaram
+
+*   Encontrar os melhores valores para a taxa de mutação, tamanho da população, convergência prematura e n° de gerações máximo
+
+*   Plotar os gráficos
+    *   Fitness médio por geração
+    *   Gráfico representando toda a população
