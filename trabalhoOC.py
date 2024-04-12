@@ -85,7 +85,7 @@ def cruzamento(listaGenes):                                 #Recebe a populaçã
         
         #É isso?
 
-
+ 
 
 def roleta(listaGenes):                                     #Soma 80.06 aos fitnesses da população, e calcula seus pesos (%)
     somaFitness = 0

@@ -15,13 +15,12 @@
 
 import random
 
-def mutacao_gene(gene, taxa):
-    #vamos tratar ele como se fosse uma string(?)
-    #percorremos a string, aplicamos if(taxademutação == rand()): swicthbit() else dont
-    #return gene
-    newgene = "" #aparentemente, strings sao imutáveis no python. Logo, precisamos criar uma nova string com o novo gene.
+
+def mutacao_gene(gene, taxa):                           #Mutação de apenas um gene
+    #Tratamo o gene como string
+    newgene = "" #Strings são imutáveis no python. Logo, precisamos criar uma nova string com o novo gene.
     
-    for i in gene:
+    for i in gene: #Percorremos a string, e aplicamos a taxa de mutação
         if i == ".":
             newgene += "."
         else:
@@ -29,8 +28,8 @@ def mutacao_gene(gene, taxa):
                 newgene += "0" if i == "1" else "1"
             else:
                 newgene += i
-        
     return newgene
+
 
         
 gene = "001.001"

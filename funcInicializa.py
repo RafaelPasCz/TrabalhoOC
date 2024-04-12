@@ -4,21 +4,31 @@
 #aparentemente, no python, listas podem ser passadas de uma função para outra sem problemas (passagem por referência)
 import random
 
-def inicializa_genes(tamPopulacao, tamGene, geracao1): #recebe a lista por endereço
+#Nota: Essa função inicializa a lista e já calcula o fitness automaticamente
+def inicializa_genes(tamPopulacao, tamGene, geracao1):  #Recebe a lista, inicializa ela com valores randômicos
     
-
     for i in range(tamPopulacao):
-        
         #Primeiro, vamos criar uma string vazia para armazenar nosso numero binario
-        numero = ""
+        numero = ""        
+        
         #Depois, geramos seus bits
         
-        for i in range(tamGene+2):
-            if i == 3 or i == ((tamGene/2) + 4):
-                numero += "."
+        for i in range(tamGene): 
+            if(i != 2 and i != 10): numero += str(random.randint(0, 1))     #geramos '0' ou '1'
             else:
-                numero += str(random.randint(0, 1)) #geramos um int entre 0 e 1, e convertemos pra string
-        geracao1.append(numero) #colocamos nosso gene no final da lista
+                #Essa coisa abaixo serve para evitar que a parte inteira do gene seja igual a 3 (111 ou 011)  
+                if(len(numero) == 2):  #gene X
+                    if (numero[1] == "1" and i == 2): numero += "0"
+                    else: numero += str(random.randint(0, 1))                   #geramos '0' ou '1'
+    
+                if(len(numero) == 10): #gene Y
+                    if(numero[9] == "1" and i == 10): numero += "0"
+                    else: numero += str(random.randint(0, 1))                   #geramos '0' ou '1'
+        
+        geracao1.append([numero, 0, 0]) #colocamos nosso gene no final da lista
+    
+    #fitness_populacao(listaGenes) #Calcula os fitnesses e corrige os limites da função
+                    #Seria mais eficiente calcular o fitness enquanto a lista é populada, mas daí teria que arrumar um jeito de corrigir os limites da função
 
 
 #int main()
