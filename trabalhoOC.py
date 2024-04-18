@@ -3,6 +3,11 @@
 
 import random
 import math
+import matplotlib
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d.axes3d import Axes3D
+import colorcet #Bibliotema com vários color maps bonitinhos
 
 
 def random_naonulo():
@@ -11,14 +16,109 @@ def random_naonulo():
         if num != 0:
             return num
 
+def fitnessMedio(listaGenes, listaFitness):                               #Recebe a população, calcula seu fitness médio
+    fitnessMedio = 0.0 #Var que armazena o soma e a média dos fitnesses
+    
+    for i in listaGenes:
+        fitnessMedio += i[1]    
+        
+    fitnessMedio = fitnessMedio/len(listaGenes)
+    
+    listaFitness.append(fitnessMedio) #Calculamos o fitness médio, colocamos ele na listaFitness
+    
+    
+def criaGraficos(listaFitness, populacao, ax1, ax2, ax3):
+    listaFitnessAux = []
+    
+    for i in range(len(listaFitness)):
+        listaFitnessAux.append(i)
+    
+    ax1.clear()
+    ax2.clear()
+    ax3.clear()
+    fig.clear()
+    
+    #Plotagem do gráfico do fitness médio por geração
+    
+    #plt.subplot(2, 1, 1)
+    #Argumentos:    1 - Numero de linhas;   2 - Numero de colunas;   3 - N° / qual gráfico estamos plotando agora
+    #plt.title("FITNESS MÉDIO POR GERAÇÃO")
+    #plt.plot(listaFitnessAux, listaFitness)
+    #plt.xlabel("Gerações")
+    #plt.ylabel("Fitness Médio")
+    #plt.grid()     #Adiciona um quadriculado atrás do gráfico
+    
+    ax1 = fig.add_subplot(2, 2, 1)
+    ax1.set_title("FITNESS MÉDIO POR GERAÇÃO")
+    ax1.plot(listaFitnessAux, listaFitness)
+    ax1.set_xlabel("Gerações")
+    ax1.set_ylabel("Fitness Médio")
+    
+  
+        
+    geneX = ""
+    geneY = ""
+    
+    x   = []
+    y   = []
+    z   = []
+    pizza    = []
+    colorMap = []
+    mostraPizza = False
+    if len(populacao) < 20: mostraPizza = True
+    
+    for i in range(len(populacao)):
+        geneX, geneY = separaXY(populacao[i][0])
+        x.append(binario_para_float(geneX))
+        y.append(binario_para_float(geneY))
+        z.append(populacao[i][1])
+        
+        if mostraPizza == True:
+            piz = int((populacao[i][2]*100)/2)
+            if piz == 0 : piz = 1
+            pizza.append(piz)        #pizza.append(populacao[i][2])
+        #Não podemos colocar muitos elementos no gráfico de pizza, se não acontece divisão por 0
+        
+        
+        
+        cor = int(((populacao[i][1] + 67.5637) / (67.5637 + 67.5637)) * (100 - 0) + 0)
+        colorMap.append(cor)
+        #Dados de cor vão de uma escala de 0 a 100, baseados no fitness
+        #Como o fitness vai de -67.56 até 67.65, devemos normalizar estes dados.
+                                                    #FUNCIONA!
+
+
+    ax2 = fig.add_subplot(2, 2, 2, projection = '3d')
+    ax2.set_title("POPULAÇÃO EM TEMPO REAL")
+    ax2.scatter(x, y, z, c = colorMap, cmap = "cet_linear_kry_0_97_c73")
+
+
+    ax3 = fig.add_subplot(2, 2, 3)
+    ax3.set_title("Roleta")
+    ax3.pie(pizza)
+
+    #print(x)
+    #print(y)
+    #print(z)
+    #print("float to int X1: ", float_para_binario(x[0]))
+    #print("float to int Y1: ", float_para_binario(y[0]))
+    #print("float to int X4: ", float_para_binario(x[3]))
+    #print("float to int Y4: ", float_para_binario(y[3]))
+    #x = input("xccc")
+    plt.draw()
+    plt.pause(0.011)
+    
+    
+    
+    
+
 
 
 def cruzamento(listaGenes):                                 #Recebe a população com seus pesos, e cruza eles de 2 em 2.
     
     nCruzamentos = int(len(listaGenes) // 2) #Quantos pares de cruzamento serão selecionados
                                         #// divide e arredonda para baixo
-                                        
-                                        
+                                                                      
     for i in range(nCruzamentos):
         somaPesos = sum([gene[2] for gene in listaGenes]) #soma dos pesos dos genes
         
@@ -97,7 +197,9 @@ def roleta(listaGenes):                                     #Soma 80.06 aos fitn
     #print("somaFitness é: ", somaFitness)
     
     for i in listaGenes:                #iteramos por todos os genes
-        i[2] = (i[1] / somaFitness)     #probabilidade = (fitness + modulo do valor minimo / soma dos fitness) 
+        aux = i[1] / somaFitness
+        if aux < 0.0001 : aux = 0.0001
+        i[2] = (aux)     #probabilidade = (fitness + modulo do valor minimo / soma dos fitness) 
     
 
 
@@ -170,7 +272,7 @@ def inicializa_genes(tamPopulacao, tamGene, geracao1):  #Recebe a lista, inicial
                 if(len(numero) == 10): #gene Y
                     if(numero[9] == "1" and i == 10): numero += "0"
                     else: numero += str(random.randint(0, 1))                   #geramos '0' ou '1'
-        
+                    
         geracao1.append([numero, 0, 0]) #colocamos nosso gene no final da lista
     
     fitness_populacao(listaGenes) #Calcula os fitnesses e corrige os limites da função
@@ -283,10 +385,17 @@ def binario_para_float(partes):                         #Recebe string binaria p
 
 
 def funcao(x,y):                                        #Recebe X e Y, retorna Z
-    z = (pow(x,5)) - (10*(pow(x,3))) + (30*x) - (pow(y,2)) + (21*y)
+    z = (pow(x,5)) - (10*(pow(x,3))) + (30*x) - (pow(y,2)) + (21*y) 
     return z
 
 
+    
+def separaXY(gene):
+    tamanho = int(len(gene)/2)
+    x = gene[:tamanho]
+    y = gene[tamanho:]
+
+    return x, y
 
 
 #int main()
@@ -331,12 +440,12 @@ if(debug == "2" or debug == "Não" or debug == "não" or debug == "Nao" or debug
     taxaMutacao  = float(input("Insira a taxa de mutação (entre 0.01 e 0.05): "))       #Interpretado como relação (porcentagem/100)
     taxaElitismo = float(input("Insira a porcentagem de elitismo (recomendado - 0.5): "))      #Interpretado como porcentagem (%)
 else:
-    tamPopulacao = 10
+    tamPopulacao = 100
     tamGene      = 16
-    geracoes     = 10
+    geracoes     = 5
     taxaMutacao  = 0.05
     taxaElitismo = 0.5
-    eliteReps    = 12
+    eliteReps    = 50
 
 eliteCounter  = 0     
 eliteAnterior = ""  #Variáveis usadas para identificar uma convergência prematura
@@ -344,9 +453,10 @@ eliteAnterior = ""  #Variáveis usadas para identificar uma convergência premat
 taxaElitismo = taxaElitismo / 100                           #Transformamos a porcentagem no seu equivalente numérico
 taxaElitismo = int(math.ceil(taxaElitismo * tamPopulacao))  #Obtemos o valor absoluto de elites por geração
 
-listaGenes  = []    #Matriz. Col 0 - Gene | Col 1 - Fitness | Col 2 - % roleta
-listaElites = []    #Matriz que armazena temporariamente genes removidos da listaGenes na função elitismo()
-
+listaGenes   = []    #Matriz. Col 0 - Gene | Col 1 - Fitness | Col 2 - % roleta
+listaElites  = []    #Matriz que armazena temporariamente genes removidos da listaGenes na função elitismo()
+listaFitness = []
+geracoesPassadas = 0
 
 
 inicializa_genes(tamPopulacao, tamGene, listaGenes) #incializamos a função com os parâmetros acima
@@ -354,18 +464,40 @@ print("Sua pop inicial em binario é:")
 print_lista(listaGenes)
 
 
+
+# Cria a figura e os eixos/matriz
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 8))
+
+
+
 for i in range(geracoes + 1):
+    geracoesPassadas += 1
+    
+    
+    #Cálculo do fitness médio aqui
+    #Fitness médio da geração, para mostrar ele evoluindo no gráfico
+    fitnessMedio(listaGenes, listaFitness)
+    #-----------------
+    
+    
+
+    
+    
     #fitness_populacao(listaGenes)  #Acho que essa função nem vai ser necessária,
                                     #já que o fitness sempre é recalculado logo quando um gene é alterado
     #print("--------------------------------------------")
     print(" Nova iteração! Aqui está a lista de genes: ")
+    print("")
     print_lista(listaGenes)
+    print(" E aqui está a lista de fitness médio: ")
+    print("")
+    print_lista(listaFitness)
+    
     #print("--------------------------------------------")
+    
     
     #Critério de parada aqui 
     #checagem de convergência prematura
-    
-    
     if(i == (geracoes) or eliteCounter >= eliteReps): #Se alcançar o número máximo de iterações, ou outro criterio de parada lá
         i = geracoes + 8
         print("LOOP TERMINADO!!! O motivo é...")
@@ -394,6 +526,8 @@ for i in range(geracoes + 1):
     #print("----------------------")
     #-----------------
     
+    #Mostramos o Gráfico de Fitness Médio na tela:
+    criaGraficos(listaFitness, listaGenes, ax1, ax2, ax3)
     
     #cruzamento aqui
     #print("--------CRUZAMENTO--------")
@@ -425,12 +559,15 @@ for i in range(geracoes + 1):
 
 
 print("Execução do algoritmo executada com sucesso.")
+print("Se passaram ", geracoesPassadas, " gerações")
 elitismo(listaGenes, listaElites, taxaElitismo)
 print("Os melhores genes encontrados foram: ")
 print(listaElites)
 
 
 #fitness_populacao(listaGenes)
+
+bitcoin = input("Digite algo para fechar: ") 
 
 #print("Sua pop mutada é:")
 #print_lista(listaGenes)

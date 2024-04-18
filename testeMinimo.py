@@ -3,9 +3,11 @@
 
 #VALOR MÁXIMO DE X = 1.1260325
 #VALOR MÁXIMO DE Y = 2.5
+##VALOR MÁXIMO DE Z = 67.56375122070312
 
 #VALOR MÍNIMO DE X = -1.12603
 #VALOR MÍNIMO DE Y = -2.5
+##VALOR MÍNIMO DE Z = -67.56375122070312
 
 
 
@@ -23,6 +25,11 @@ def ZfuncaoY(y):    #Aqui, Y == 2.5
     x = 1.1260325 #Valor ideal de X
     z = (pow(x,5)) - (10*(pow(x,3))) + (30*x) - (pow(y,2)) + (21*y)
     return z
+
+
+#while(True):
+#    print("Coiso ", ZfuncaoXY(1.1260325, 2.5))
+
 
 
 
