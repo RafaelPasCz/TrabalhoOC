@@ -27,7 +27,7 @@ def fitnessMedio(listaGenes, listaFitness):                               #Receb
     listaFitness.append(fitnessMedio) #Calculamos o fitness médio, colocamos ele na listaFitness
     
     
-def criaGraficos(listaFitness, populacao, ax1, ax2, ax3):
+def criaGraficos(listaFitness, populacao, ax1, ax2, ax3, ax4, listaElites):
     listaFitnessAux = []
     
     for i in range(len(listaFitness)):
@@ -48,7 +48,7 @@ def criaGraficos(listaFitness, populacao, ax1, ax2, ax3):
     #plt.ylabel("Fitness Médio")
     #plt.grid()     #Adiciona um quadriculado atrás do gráfico
     
-    ax1 = fig.add_subplot(2, 2, 1)
+    ax1 = fig.add_subplot(2, 2, 3)
     ax1.set_title("FITNESS MÉDIO POR GERAÇÃO")
     ax1.plot(listaFitnessAux, listaFitness)
     ax1.set_xlabel("Gerações")
@@ -87,15 +87,35 @@ def criaGraficos(listaFitness, populacao, ax1, ax2, ax3):
         #Como o fitness vai de -67.56 até 67.65, devemos normalizar estes dados.
                                                     #FUNCIONA!
 
+    for i in range(len(listaElites)):
+        geneX, geneY = separaXY(listaElites[i][0])
+        x.append(binario_para_float(geneX))
+        y.append(binario_para_float(geneY))
+        z.append(listaElites[i][1])
+        
+        if mostraPizza == True:
+            piz = int((listaElites[i][2]*100)/2)
+            if piz == 0 : piz = 1
+            pizza.append(piz)        #pizza.append(listaElites[i][2])
+        #Não podemos colocar muitos elementos no gráfico de pizza, se não acontece divisão por 0
+        
+        
+        
+        cor = int(((populacao[i][1] + 67.5637) / (67.5637 + 67.5637)) * (100 - 0) + 0)
+        colorMap.append(cor)
+        #Dados de cor vão de uma escala de 0 a 100, baseados no fitness
+        #Como o fitness vai de -67.56 até 67.65, devemos normalizar estes dados.
+                                                    #FUNCIONA!
 
-    ax2 = fig.add_subplot(2, 2, 2, projection = '3d')
+
+    ax2 = fig.add_subplot(2, 2, 1, projection = '3d')
     ax2.set_title("POPULAÇÃO EM TEMPO REAL")
     ax2.scatter(x, y, z, c = colorMap, cmap = "cet_linear_kry_0_97_c73")
 
-
-    ax3 = fig.add_subplot(2, 2, 3)
-    ax3.set_title("Roleta")
-    ax3.pie(pizza)
+    if mostraPizza == True:
+        ax3 = fig.add_subplot(2, 2, 4)
+        ax3.set_title("Roleta")
+        ax3.pie(pizza)
 
     #print(x)
     #print(y)
@@ -527,7 +547,7 @@ for i in range(geracoes + 1):
     #-----------------
     
     #Mostramos o Gráfico de Fitness Médio na tela:
-    criaGraficos(listaFitness, listaGenes, ax1, ax2, ax3)
+    criaGraficos(listaFitness, listaGenes, ax1, ax2, ax3, ax4, listaElites)
     
     #cruzamento aqui
     #print("--------CRUZAMENTO--------")
