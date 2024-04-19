@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 import colorcet #Bibliotema com vários color maps bonitinhos
+from matplotlib.gridspec import GridSpec
+import names
 
 
 def random_naonulo():
@@ -36,7 +38,10 @@ def criaGraficos(listaFitness, populacao, ax1, ax2, ax3, ax4, listaElites):
     ax1.clear()
     ax2.clear()
     ax3.clear()
+    ax4.clear()
+    
     fig.clear()
+    
     
     #Plotagem do gráfico do fitness médio por geração
     
@@ -48,13 +53,22 @@ def criaGraficos(listaFitness, populacao, ax1, ax2, ax3, ax4, listaElites):
     #plt.ylabel("Fitness Médio")
     #plt.grid()     #Adiciona um quadriculado atrás do gráfico
     
-    ax1 = fig.add_subplot(2, 2, 3)
-    ax1.set_title("FITNESS MÉDIO POR GERAÇÃO")
-    ax1.plot(listaFitnessAux, listaFitness)
-    ax1.set_xlabel("Gerações")
-    ax1.set_ylabel("Fitness Médio")
+    #ax4 = fig.add_subplot(2, 1, 1)              #grafico 
+    ##fitnesses médios
+    #ax4.set_title("FITNESS MÉDIO POR GERAÇÃO")
+    #ax4.plot(listaFitnessAux, listaFitness)
+    #ax4.set_xlabel("Gerações")
+    #ax4.set_ylabel("Fitness Médio")
     
-  
+    ax3 = fig.add_subplot(gs[1, :-1])
+    ax3.set_title("FITNESS MÉDIO POR GERAÇÃO")
+    ax3.plot(listaFitnessAux, listaFitness)
+    ax3.set_xlabel("Gerações")
+    ax3.set_ylabel("Fitness Médio")
+    
+    #1 - 3D     2 - Pizza       3 - Texto
+    #4 - Evo    5 - Evo         6 - Texto
+
         
     geneX = ""
     geneY = ""
@@ -107,15 +121,47 @@ def criaGraficos(listaFitness, populacao, ax1, ax2, ax3, ax4, listaElites):
         #Como o fitness vai de -67.56 até 67.65, devemos normalizar estes dados.
                                                     #FUNCIONA!
 
+    
+    #mostramos, o gráfico 3d com a população em tempo real
+    ax1 = fig.add_subplot(gs[0, :1], projection = '3d')
+    ax1.set_title("POPULAÇÃO EM TEMPO REAL")
+    ax1.scatter(x, y, z, c = colorMap, cmap = "cet_linear_kry_0_97_c73")
 
-    ax2 = fig.add_subplot(2, 2, 1, projection = '3d')
-    ax2.set_title("POPULAÇÃO EM TEMPO REAL")
-    ax2.scatter(x, y, z, c = colorMap, cmap = "cet_linear_kry_0_97_c73")
 
+    #mostramos, ou não, o gráfico da roleta
     if mostraPizza == True:
-        ax3 = fig.add_subplot(2, 2, 4)
-        ax3.set_title("Roleta")
-        ax3.pie(pizza)
+        ax2 = fig.add_subplot(gs[0, :-1])
+        ax2.set_title("Roleta")
+        ax2.pie(pizza)
+    else:
+        ax2 = fig.add_subplot(gs[0, 1])
+        ax2.set_title("Roleta")
+        ax2.axis("off") #tira as bordas feias do grafico
+        ax2.text(0.5, 0.5, "População grande\ndemais para\n mostrar a roleta!", fontsize=12, ha='center', va='center', transform=ax2.transAxes)
+        
+    randName = ""
+    quantNomes = 36
+    #Aqui geramos um texto para printar as infos da população:
+    textoPopulacao = "Nome:      Gene:              Fitness:\n\n"
+    if len(populacao) < 36 : quantNomes = len(populacao)
+    for i in range(quantNomes):
+        while len(randName) != 6: randName = names.get_first_name()
+        textoPopulacao += randName
+        textoPopulacao += "     "
+        textoPopulacao += populacao[i][0]
+        textoPopulacao += "   "
+        fitness = populacao[i][1]
+        fitness -= 67.56375122070312
+        strFitness = str(fitness)
+        textoPopulacao += strFitness[:7]
+        textoPopulacao += "\n"
+        randName = ""
+    
+    #Aqui mostramos a população Atual
+    ax4 = fig.add_subplot(gs[0:, 2])
+    ax4.axis("off")
+    ax4.set_title("População Atual")
+    ax4.text(0.5, 0.5, textoPopulacao, fontsize=10, ha='center', va='center_baseline', fontfamily = "monospace")
 
     #print(x)
     #print(y)
@@ -460,12 +506,12 @@ if(debug == "2" or debug == "Não" or debug == "não" or debug == "Nao" or debug
     taxaMutacao  = float(input("Insira a taxa de mutação (entre 0.01 e 0.05): "))       #Interpretado como relação (porcentagem/100)
     taxaElitismo = float(input("Insira a porcentagem de elitismo (recomendado - 0.5): "))      #Interpretado como porcentagem (%)
 else:
-    tamPopulacao = 100
+    tamPopulacao = 50
     tamGene      = 16
-    geracoes     = 5
+    geracoes     = 100
     taxaMutacao  = 0.05
     taxaElitismo = 0.5
-    eliteReps    = 50
+    eliteReps    = 25
 
 eliteCounter  = 0     
 eliteAnterior = ""  #Variáveis usadas para identificar uma convergência prematura
@@ -486,9 +532,26 @@ print_lista(listaGenes)
 
 
 # Cria a figura e os eixos/matriz
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 8))
+#fig = plt.figure()
+#gridspan = fig.add_gridspec(2, 3)
+
+fig = plt.figure(constrained_layout=True)
+gs = GridSpec(2, 3, figure=fig)
 
 
+ax1 = fig.add_subplot(gs[0, :1], projection='3d')   #Ocupa primeiro 1/3 da primeira linha
+ax2 = fig.add_subplot(gs[0, 1])   #Ocupa segundo 1/3 da primeira linha
+ax3 = fig.add_subplot(gs[1, :-1])   #Vai de 0 até 2/3 da tela, na segunda linha
+ax4 = fig.add_subplot(gs[0, :-1])   #Texto, ocupa a direita
+
+
+
+
+#fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3, figsize=(12, 8))
+
+
+#1 - 3D     2 - Pizza       3 - Texto
+#4 - Evo    5 - Evo         6 - Texto
 
 for i in range(geracoes + 1):
     geracoesPassadas += 1
